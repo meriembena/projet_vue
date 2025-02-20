@@ -3,7 +3,6 @@
     <h2>Enregistrer une participation</h2>
 
     <form class="participation-form" @submit.prevent="enregistrerParticipation">
-      <!-- Personne -->
       <label for="personne" class="label">Personne</label>
       <select
         id="personne"
@@ -11,25 +10,24 @@
         required
         class="select"
       >
-        <option value="" disabled>-- Choisir une personne --</option>
+        <option value="" disabled>-- personne --</option>
         <option
           v-for="personne in personnes"
           :key="personne.matricule"
           :value="personne.matricule"
         >
-          {{ personne.nom }} {{ personne.prenom }}
+          {{ personne.prenom }} {{ personne.nom }}
         </option>
       </select>
 
-      <!-- Projet -->
-      <label for="projet" class="label">Projet</label>
+      <label for="projet" class="label">Project</label>
       <select
         id="projet"
         v-model="selectedProjet"
         required
         class="select"
       >
-        <option value="" disabled>-- Choisir un projet --</option>
+        <option value="" disabled>-- projet --</option>
         <option
           v-for="projet in projets"
           :key="projet.id"
@@ -39,19 +37,17 @@
         </option>
       </select>
 
-      <!-- Rôle -->
-      <label for="role" class="label">Rôle</label>
+      <label for="role" class="label">Role</label>
       <input
         id="role"
         type="text"
         v-model="role"
-        placeholder="Ex: développeur"
+        placeholder="Ex: developer"
         required
         class="input"
       />
 
-      <!-- Pourcentage (Slider) -->
-      <label for="pourcentage" class="label">Pourcentage</label>
+      <label for="pourcentage" class="label">Percentage</label>
       <div class="slider-container">
         <input
           id="pourcentage"
@@ -68,7 +64,6 @@
       <button type="submit" class="btn-submit">Enregistrer</button>
     </form>
 
-    <!-- Messages de feedback -->
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
     <div v-if="successMsg" class="success">{{ successMsg }}</div>
   </div>
@@ -78,17 +73,15 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
-// Données réactives
 const personnes = ref([])
 const projets = ref([])
 const selectedPersonne = ref('')
 const selectedProjet = ref('')
 const role = ref('')
-const pourcentage = ref(0.1) // Valeur par défaut : 0.1 = 10%
+const pourcentage = ref(0.1)
 const errorMsg = ref('')
 const successMsg = ref('')
 
-// Charger la liste des personnes
 const chargerPersonnes = async () => {
   try {
     const resp = await axios.get('/api/personnes')
@@ -100,7 +93,6 @@ const chargerPersonnes = async () => {
   }
 }
 
-// Charger la liste des projets
 const chargerProjets = async () => {
   try {
     const resp = await axios.get('/api/projets')
@@ -112,7 +104,6 @@ const chargerProjets = async () => {
   }
 }
 
-// Enregistrer la participation
 const enregistrerParticipation = async () => {
   const payload = {
     matricule: selectedPersonne.value,
@@ -124,7 +115,6 @@ const enregistrerParticipation = async () => {
     await axios.post('/api/gestion/participation', payload)
     successMsg.value = 'Participation enregistrée avec succès.'
     errorMsg.value = ''
-    // Réinitialisation
     selectedPersonne.value = ''
     selectedProjet.value = ''
     role.value = ''
@@ -146,7 +136,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* --- Mise en forme générale --- */
 .card {
   max-width: 400px;
   margin: 2rem auto;
@@ -161,24 +150,68 @@ h2 {
   text-align: center;
   font-size: 1.25rem;
 }
-
-/* --- Formulaire --- */
 .participation-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .label {
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
-.select, .input {
-  padding: 0.5rem;
+.select {
+  padding: 0.75rem 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  color: #333;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+.select:hover {
+  border-color: #33ffb5;
+  background-color: #f0fdf4;
+}
+
+.select:focus {
+  border-color: #33ffb5;
+  outline: none;
+  background-color: #e8f7f0;
+}
+
+.select::-ms-expand {
+  display: none;
+}
+
+.select::placeholder {
+  color: #6b6b6b;
+  font-style: normal;
   font-size: 0.9rem;
+}
+
+.select option {
+  padding: 1rem;
+  background-color: #fff;
+  color: #333;
+  border: none;
+}
+
+.select option:hover {
+  background-color: #33ffb5;
+  color: #fff;
 }
 
 .slider-container {
@@ -187,65 +220,86 @@ h2 {
   gap: 1rem;
 }
 
-/* Le slider (input range) */
 .slider {
   flex: 1;
   -webkit-appearance: none;
   height: 4px;
-  background: #ddd;
+  background: #6b6b6b;
   border-radius: 2px;
   outline: none;
   cursor: pointer;
 }
+
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #2196f3;
-  cursor: pointer;
-  border: 2px solid #fff;
-  box-shadow: 0 0 2px rgba(0,0,0,0.2);
-}
-.slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #2196f3;
+  background: #33ffb5;
   cursor: pointer;
   border: 2px solid #fff;
   box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
 
-/* Valeur du slider */
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #33ffb5;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+
 .slider-value {
   width: 40px;
   text-align: center;
 }
 
-/* --- Bouton --- */
 .btn-submit {
-  padding: 0.6rem 1rem;
-  background-color: #2196f3;
+  padding: 0.4rem 0.8rem;
+  background-color: #33ffb5;
   color: #fff;
   font-weight: 600;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
-  font-size: 0.9rem;
-}
-.btn-submit:hover {
-  background-color: #1976d2;
+  font-size: 0.8rem;
+  margin-left: 0;
 }
 
-/* --- Feedback --- */
+.btn-submit:hover {
+  background-color: #33ffb5;
+}
+
+.participation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+::placeholder {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 1;
+}
+
+.input::placeholder, .select::placeholder {
+  color: #6b6b6b;
+  font-style: normal;
+  font-size: 0.9rem;
+}
+
 .error {
   margin-top: 1rem;
-  color: #d32f2f;
+  color: #ff3f33;
 }
+
 .success {
   margin-top: 1rem;
-  color: #388e3c;
+  color: #61ff33;
 }
 </style>

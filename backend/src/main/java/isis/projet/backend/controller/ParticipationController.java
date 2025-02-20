@@ -23,23 +23,15 @@ public class ParticipationController {
         this.mapper = mapper;
     }
 
-    /**
-     * Enregistre une participation d'une personne à un projet.
-     *
-     * @param dto Contient le matricule de la personne, le code du projet, le rôle et le pourcentage
-     * @return Réponse HTTP avec la participation créée ou un message d'erreur
-     */
     @PostMapping
     public ResponseEntity<?> enregistrerParticipation(@RequestBody ParticipationCreationDTO dto) {
         try {
-            // Appel du service métier
             Participation participation = participationService.enregistrerParticipation(
                     dto.getMatricule(),
                     dto.getCodeProjet(),
                     dto.getRole(),
                     dto.getPourcentage()
             );
-            // Transformation de l'entité en DTO d'affichage
             ParticipationDTO body = mapper.map(participation, ParticipationDTO.class);
             return ResponseEntity.ok(body);
         } catch (NoSuchElementException | IllegalStateException e) {
